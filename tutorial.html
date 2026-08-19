@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 星穹弈 · 教学关</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        body {
+            background: #0a0e1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .app {
+            max-width: 700px;
+            width: 100%;
+            background: radial-gradient(ellipse at 20% 30%, #141c2b, #080b14);
+            border-radius: 40px;
+            padding: 30px 28px 32px;
+            border: 1px solid rgba(255, 215, 0, 0.12);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.9);
+            text-align: center;
+        }
+        .title {
+            color: #fbbf24;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .sub {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            aspect-ratio: 1/1;
+            max-width: 400px;
+            margin: 0 auto 20px;
+        }
+        .cell {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            aspect-ratio: 1/1;
+            border: 2px solid transparent;
+            transition: 0.15s;
+            cursor: default;
+        }
+        .cell.player {
+            background: rgba(251, 191, 36, 0.15);
+            border-color: #fbbf24;
+            color: #fbbf24;
+        }
+        .cell.ai {
+            background: rgba(239, 68, 68, 0.15);
+            border-color: #ef4444;
+            color: #ef4444;
+        }
+        .cell.highlight {
+            border-color: #fbbf24;
+            box-shadow: 0 0 24px rgba(251, 191, 36, 0.3);
+            cursor: pointer;
+            animation: pulse 0.8s infinite alternate;
+        }
+        @keyframes pulse {
+            from {
+                box-shadow: 0 0 16px rgba(251, 191, 36, 0.2);
+            }
+            to {
+                box-shadow: 0 0 40px rgba(251, 191, 36, 0.5);
+            }
+        }
+        .cell.goal {
+            border-color: #34d399;
+            box-shadow: 0 0 30px rgba(52, 211, 153, 0.3);
+        }
+        .info {
+            color: #94a3b8;
+            font-size: 15px;
+            margin-bottom: 14px;
+            min-height: 28px;
+        }
+        .info strong {
+            color: #fbbf24;
+        }
+        .hand-area {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .card {
+            width: 72px;
+            height: 96px;
+            background: linear-gradient(145deg, #1e2a3a, #0f172a);
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #e2e8f0;
+            transition: 0.2s;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .card .sub {
+            font-size: 11px;
+            color: #7a8aa8;
+            font-weight: 400;
+            margin-top: 2px;
+        }
+        .card.highlight-card {
+            border-color: #fbbf24;
+            box-shadow: 0 0 24px rgba(251, 191, 36, 0.2);
+        }
+        .card.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .card.selected {
+            border-color: #fbbf24;
+        }
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        .actions button {
+            padding: 10px 24px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .actions button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .btn-gold {
+            background: #fbbf24;
+            color: #0f172a;
+        }
+        .btn-gold:hover:not(:disabled) {
+            background: #fcd34d;
+            transform: scale(1.02);
+        }
+        .btn-outline {
+            background: transparent;
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .btn-outline:hover:not(:disabled) {
+            border-color: #fbbf24;
+            color: #fbbf24;
+        }
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+        }
+        .btn-danger:hover:not(:disabled) {
+            background: #dc2626;
+        }
+        .step-indicator {
+            color: #475569;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        .win-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            backdrop-filter: blur(8px);
+            flex-direction: column;
+            gap: 16px;
+        }
+        .win-overlay h1 {
+            font-size: 48px;
+            color: #fbbf24;
+        }
+        .win-overlay p {
+            color: #94a3b8;
+            font-size: 18px;
+            max-width: 400px;
+            text-align: center;
+        }
+        .win-overlay button {
+            padding: 14px 40px;
+            border-radius: 40px;
+            border: none;
+            background: #fbbf24;
+            color: #0f172a;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .win-overlay button:hover {
+            background: #fcd34d;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #7a8aa8;
+            font-size: 13px;
+        }
+        .top-bar a {
+            color: #fbbf24;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        .log {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 14px;
+            color: #94a3b8;
+            text-align: left;
+            margin-top: 12px;
+            min-height: 48px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .log .highlight {
+            color: #fbbf24;
+        }
+    </style>
+</head>
+<body>
+    <div class="app" id="app">
+        <div class="top-bar">
+            <span>🎓 教学关 · 4×4</span>
+            <span><a id="exitToFull" onclick="exitTutorial()">退出 → 完整版</a></span>
+        </div>
+
+        <div class="title">♟️ 星穹弈 · 新手训练</div>
+        <div class="sub" id="stepDesc">跟着引导走完 3 步，你就能学会核心玩法</div>
+
+        <!-- 棋盘 -->
+        <div class="board" id="board"></div>
+
+        <!-- 手牌区域 -->
+        <div class="hand-area" id="handArea"></div>
+
+        <!-- 操作按钮 -->
+        <div class="actions" id="actions">
+            <button class="btn-gold" id="btnBet" disabled>下注走棋</button>
+            <button class="btn-outline" id="btnEndTurn" disabled>结束回合</button>
+            <button class="btn-danger" id="btnReset" onclick="resetGame()">🔄 重置</button>
+        </div>
+
+        <div class="info" id="infoMsg">💡 点击唯一高亮的牌，然后点「下注走棋」</div>
+        <div class="step-indicator" id="stepIndicator">步骤 1/3</div>
+        <div class="log" id="logArea">🎮 欢迎！按引导操作，你会赢下这局。</div>
+    </div>
+
+    <!-- 胜利弹窗 -->
+    <div class="win-overlay hidden" id="winOverlay">
+        <h1>🎉 你赢了！</h1>
+        <p>你成功走到了 AI 的王座！<br>这就是《星穹弈》的核心玩法：<br><strong>选牌 → 下注 → 走棋</strong></p>
+        <button onclick="location.reload()">🔄 再来一局</button>
+        <button onclick="exitTutorial()" style="background:transparent;color:#94a3b8;border:1px solid rgba(255,255,255,0.1);">→ 前往完整版</button>
+    </div>
+
+    <script>
+        // ======================================================================
+        //  教学关 · V1.0
+        //  强制引导，4×4 棋盘，只教“选牌→下注→走棋”
+        // ======================================================================
+
+        // ---- 状态 ----
+        const state = {
+            board: [],
+            playerPos: { r: 0, c: 0 },
+            aiPos: { r: 3, c: 3 },
+            turn: 0,
+            hand: ['INTJ', 'ESFP', 'INFP'], // 固定手牌
+            selectedCard: null,
+            stepRemaining: 0,
+            phase: 'select_card', // select_card | bet | move | end_turn
+            stepCount: 0, // 教学步骤计数器
+            gameOver: false,
+            won: false,
+        };
+
+        // ---- DOM ----
+        const boardEl = document.getElementById('board');
+        const handEl = document.getElementById('handArea');
+        const infoMsg = document.getElementById('infoMsg');
+        const stepIndicator = document.getElementById('stepIndicator');
+        const logArea = document.getElementById('logArea');
+        const btnBet = document.getElementById('btnBet');
+        const btnEndTurn = document.getElementById('btnEndTurn');
+        const winOverlay = document.getElementById('winOverlay');
+
+        // ---- 牌组映射 ----
+        const GROUP_MAP = { INTJ: 'NT', ESFP: 'SP', INFP: 'NF' };
+        const EXCHANGE_RATE = { NT: 2.0, NF: 1.5, SP: 3.0 };
+
+        // ---- 初始化棋盘 ----
+        function initBoard() {
+            const b = [];
+            for (let r = 0; r < 4; r++) {
+                const row = [];
+                for (let c = 0; c < 4; c++) {
+                    row.push({ hasPlayer: false, hasAI: false, isKing: false });
+                }
+                b.push(row);
+            }
+            b[0][0].hasPlayer = true;
+            b[0][0].isKing = true;
+            b[3][3].hasAI = true;
+            b[3][3].isKing = true;
+            return b;
+        }
+
+        state.board = initBoard();
+
+        // ---- 获取可走路径（简化版，只返回相邻可走格子） ----
+        function getValidMoves(r, c, steps) {
+            const moves = [];
+            const dirs = [
+                [-1, 0],
+                [1, 0],
+                [0, -1],
+                [0, 1]
+            ];
+            for (let d of dirs) {
+                for (let s = 1; s <= steps; s++) {
+                    const nr = r + d[0] * s;
+                    const nc = c + d[1] * s;
+                    if (nr < 0 || nr >= 4 || nc < 0 || nc >= 4) break;
+                    const cell = state.board[nr][nc];
+                    if (cell.hasAI && cell.isKing) {
+                        moves.push({ r: nr, c: nc, isGoal: true });
+                        break;
+                    }
+                    if (cell.hasAI || cell.hasPlayer) break;
+                    moves.push({ r: nr, c: nc });
+                }
+            }
+            return moves;
+        }
+
+        // ---- 渲染棋盘 ----
+        function renderBoard() {
+            boardEl.innerHTML = '';
+            const b = state.board;
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    const cell = b[r][c];
+                    const div = document.createElement('div');
+                    div.className = 'cell';
+                    div.dataset.r = r;
+                    div.dataset.c = c;
+
+                    if (cell.hasPlayer && cell.isKing) {
+                        div.classList.add('player');
+                        div.textContent = '👑';
+                        div.style.fontSize = '32px';
+                    } else if (cell.hasAI && cell.isKing) {
+                        div.classList.add('ai');
+                        div.textContent = '♚';
+                        div.style.fontSize = '32px';
+                    } else if (cell.hasPlayer) {
+                        div.textContent = '🧑';
+                        div.style.fontSize = '28px';
+                    } else if (cell.hasAI) {
+                        div.textContent = '🤖';
+                        div.style.fontSize = '28px';
+                    }
+
+                    // 高亮可移动格子
+                    if (state.phase === 'move' && state.stepRemaining > 0) {
+                        const pos = state.playerPos;
+                        const moves = getValidMoves(pos.r, pos.c, state.stepRemaining);
+                        if (moves.some(m => m.r === r && m.c === c)) {
+                            div.classList.add('highlight');
+                            div.style.cursor = 'pointer';
+                            div.onclick = () => handleMove(r, c);
+                        }
+                        // 如果是目标格，额外标出
+                        if (r === 3 && c === 3) {
+                            div.classList.add('goal');
+                        }
+                    }
+
+                    boardEl.appendChild(div);
+                }
+            }
+            // 如果是在移动阶段且没有高亮格子，自动结束回合
+            if (state.phase === 'move' && state.stepRemaining > 0) {
+                const pos = state.playerPos;
+                const moves = getValidMoves(pos.r, pos.c, state.stepRemaining);
+                if (moves.length === 0 && !state.gameOver) {
+                    log('没有可走的格子，自动结束回合');
+                    endTurn();
+                }
+            }
+        }
+
+        // ---- 渲染手牌 ----
+        function renderHand() {
+            handEl.innerHTML = '';
+            state.hand.forEach((card, idx) => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                if (state.phase === 'select_card' && idx === 0) {
+                    div.classList.add('highlight-card');
+                    div.style.cursor = 'pointer';
+                    div.onclick = () => selectCard(idx);
+                } else {
+                    div.classList.add('disabled');
+                }
+                const group = GROUP_MAP[card] || '';
+                const rate = EXCHANGE_RATE[group] || 0;
+                div.innerHTML = `<span>${card}</span><span class="sub">${group} ${rate}步/万</span>`;
+                handEl.appendChild(div);
+            });
+        }
+
+        // ---- 选择卡牌 ----
+        function selectCard(idx) {
+            if (state.phase !== 'select_card' || state.gameOver) return;
+            if (idx !== 0) {
+                log('请点击高亮的那张牌（INTJ）');
+                return;
+            }
+            state.selectedCard = state.hand[idx];
+            state.phase = 'bet';
+            infoMsg.textContent = '✅ 已选 INTJ，点击「下注走棋」';
+            btnBet.disabled = false;
+            renderHand();
+            renderBoard();
+            log('选好了 INTJ，现在下注');
+        }
+
+        // ---- 下注走棋 ----
+        function handleBet() {
+            if (state.phase !== 'bet' || state.gameOver) return;
+            if (!state.selectedCard) {
+                log('请先选牌');
+                return;
+            }
+            const card = state.selectedCard;
+            const group = GROUP_MAP[card];
+            const rate = EXCHANGE_RATE[group] || 1;
+            const bet = 1; // 教学版固定下注1万
+            const steps = Math.floor(rate * bet);
+            if (steps <= 0) {
+                log('步数为0，请重试');
+                return;
+            }
+            state.stepRemaining = steps;
+            state.phase = 'move';
+            btnBet.disabled = true;
+            infoMsg.textContent = `🎯 你获得了 ${steps} 步，点击发光的格子移动`;
+            state.stepCount++;
+            stepIndicator.textContent = `步骤 ${state.stepCount}/3`;
+            log(`下注1万，获得 ${steps} 步`);
+            renderBoard();
+            renderHand();
+
+            // 如果步数为0，自动结束回合
+            if (state.stepRemaining <= 0) {
+                log('步数为0，自动结束回合');
+                endTurn();
+            }
+        }
+
+        // ---- 处理移动 ----
+        function handleMove(r, c) {
+            if (state.phase !== 'move' || state.gameOver) return;
+            if (state.stepRemaining <= 0) {
+                log('步数已用完，请结束回合');
+                return;
+            }
+            const pos = state.playerPos;
+            const moves = getValidMoves(pos.r, pos.c, state.stepRemaining);
+            const found = moves.find(m => m.r === r && m.c === c);
+            if (!found) {
+                log('无法走到该格');
+                return;
+            }
+
+            // 执行移动
+            const oldCell = state.board[pos.r][pos.c];
+            oldCell.hasPlayer = false;
+            oldCell.isKing = false;
+
+            const newCell = state.board[r][c];
+            if (newCell.hasAI && newCell.isKing) {
+                // 胜利！
+                state.gameOver = true;
+                state.won = true;
+                state.board[r][c].hasAI = false;
+                state.board[r][c].isKing = false;
+                state.board[r][c].hasPlayer = true;
+                state.board[r][c].isKing = true;
+                state.playerPos = { r, c };
+                renderBoard();
+                showWin();
+                return;
+            }
+
+            newCell.hasPlayer = true;
+            newCell.isKing = true;
+            state.playerPos = { r, c };
+            state.stepRemaining--;
+
+            log(`走到 (${r+1}, ${c+1})，剩余 ${state.stepRemaining} 步`);
+
+            // 检查是否到达AI王格
+            if (r === 3 && c === 3) {
+                state.gameOver = true;
+                state.won = true;
+                renderBoard();
+                showWin();
+                return;
+            }
+
+            renderBoard();
+            renderHand();
+
+            // 如果步数用完，自动结束回合
+            if (state.stepRemaining <= 0) {
+                log('步数用完，自动结束回合');
+                endTurn();
+            } else {
+                // 更新可走路径
+                renderBoard();
+            }
+        }
+
+        // ---- 结束回合 ----
+        function endTurn() {
+            if (state.gameOver) return;
+            state.phase = 'end_turn';
+            btnEndTurn.disabled = true;
+
+            // AI回合：简单移动，向玩家方向靠近一步
+            aiMove();
+
+            // 重置玩家回合
+            state.phase = 'select_card';
+            state.selectedCard = null;
+            state.stepRemaining = 0;
+            btnBet.disabled = true;
+            // 抽牌（教学版固定手牌，不抽）
+            infoMsg.textContent = '💡 点击高亮的牌，然后点「下注走棋」';
+            renderHand();
+            renderBoard();
+
+            // 检查AI是否吃了玩家
+            if (!state.gameOver) {
+                // 如果玩家在(3,3)，AI会走向玩家，但如果AI到达玩家位置则游戏结束
+                const p = state.playerPos;
+                const a = state.aiPos;
+                if (p.r === a.r && p.c === a.c) {
+                    state.gameOver = true;
+                    state.won = false;
+                    log('💀 AI 吃掉了你！重新开始吧', true);
+                    infoMsg.textContent = '💀 你被AI吃掉了！点击重置重新尝试';
+                    renderBoard();
+                    return;
+                }
+            }
+            renderBoard();
+        }
+
+        // ---- AI移动（简单：向玩家方向走一步） ----
+        function aiMove() {
+            if (state.gameOver) return;
+            const p = state.playerPos;
+            const a = state.aiPos;
+
+            // 计算方向
+            let dr = 0,
+                dc = 0;
+            if (p.r > a.r) dr = 1;
+            else if (p.r < a.r) dr = -1;
+            if (p.c > a.c) dc = 1;
+            else if (p.c < a.c) dc = -1;
+
+            // 如果AI和玩家在同一格（理论上不会发生）
+            if (dr === 0 && dc === 0) return;
+
+            // 尝试移动
+            let nr = a.r + dr;
+            let nc = a.c + dc;
+            if (nr < 0 || nr >= 4 || nc < 0 || nc >= 4) {
+                // 如果超出边界，只移动一个方向
+                if (p.r > a.r && a.r < 3) nr = a.r + 1;
+                else if (p.r < a.r && a.r > 0) nr = a.r - 1;
+                else if (p.c > a.c && a.c < 3) nc = a.c + 1;
+                else if (p.c < a.c && a.c > 0) nc = a.c - 1;
+            }
+
+            // 检查目标格是否被玩家占据
+            const target = state.board[nr]?.[nc];
+            if (!target) return;
+            if (target.hasPlayer) {
+                // AI吃掉玩家
+                state.gameOver = true;
+                state.won = false;
+                log('💀 AI 吃掉了你的王！', true);
+                infoMsg.textContent = '💀 你输了！点击重置重新尝试';
+                renderBoard();
+                return;
+            }
+
+            // 移动AI
+            const oldCell = state.board[a.r][a.c];
+            oldCell.hasAI = false;
+            oldCell.isKing = false;
+            target.hasAI = true;
+            target.isKing = true;
+            state.aiPos = { r: nr, c: nc };
+
+            log(`🤖 AI 移动到 (${nr+1}, ${nc+1})`);
+        }
+
+        // ---- 显示胜利 ----
+        function showWin() {
+            winOverlay.classList.remove('hidden');
+            log('🎉 你赢了！教学完成！', true);
+        }
+
+        // ---- 退出教学 ----
+        function exitTutorial() {
+            if (confirm('退出教学，前往完整版游戏？')) {
+                // 这里可以跳转到完整版，目前刷新页面回到教学
+                location.reload();
+            }
+        }
+
+        // ---- 重置游戏 ----
+        function resetGame() {
+            state.board = initBoard();
+            state.playerPos = { r: 0, c: 0 };
+            state.aiPos = { r: 3, c: 3 };
+            state.turn = 0;
+            state.hand = ['INTJ', 'ESFP', 'INFP'];
+            state.selectedCard = null;
+            state.stepRemaining = 0;
+            state.phase = 'select_card';
+            state.stepCount = 0;
+            state.gameOver = false;
+            state.won = false;
+            btnBet.disabled = true;
+            btnEndTurn.disabled = true;
+            winOverlay.classList.add('hidden');
+            infoMsg.textContent = '💡 点击唯一高亮的牌，然后点「下注走棋」';
+            stepIndicator.textContent = '步骤 1/3';
+            logArea.innerHTML = '🔄 已重置，重新开始教学';
+            renderBoard();
+            renderHand();
+        }
+
+        // ---- 简单日志 ----
+        function log(msg, highlight = false) {
+            const div = document.createElement('div');
+            div.textContent = msg;
+            if (highlight) div.className = 'highlight';
+            logArea.appendChild(div);
+            logArea.scrollTop = logArea.scrollHeight;
+            if (logArea.children.length > 20) logArea.removeChild(logArea.firstChild);
+        }
+
+        // ---- 事件绑定 ----
+        btnBet.addEventListener('click', handleBet);
+
+        // ---- 初始化 ----
+        renderBoard();
+        renderHand();
+        stepIndicator.textContent = '步骤 1/3';
+        log('🎮 教学关：按引导操作，你会在3步内赢下这局');
+
+        console.log('🎓 星穹弈 · 教学关已加载');
+    </script>
+</body>
+</html>
