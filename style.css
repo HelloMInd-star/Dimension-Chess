@@ -1,0 +1,676 @@
+/* ===== CSS 变量：深色主题（默认） ===== */
+:root {
+    --bg-primary: #0a0e1a;
+    --bg-secondary: #141c2b;
+    --bg-card: #1a2233;
+    --bg-input: rgba(0, 0, 0, 0.3);
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+    --border-color: rgba(255, 255, 255, 0.06);
+    --border-glow: rgba(251, 191, 36, 0.12);
+    --shadow-color: rgba(0, 0, 0, 0.8);
+    --gold: #fbbf24;
+    --gold-dim: rgba(251, 191, 36, 0.15);
+    --cell-bg: rgba(255, 255, 255, 0.04);
+    --cell-hover: rgba(255, 255, 255, 0.06);
+    --log-bg: rgba(0, 0, 0, 0.3);
+    --card-bg: linear-gradient(145deg, #1e2a3a, #0f172a);
+}
+
+/* ===== 浅色主题 ===== */
+[data-theme="light"] {
+    --bg-primary: #f0f2f5;
+    --bg-secondary: #e4e7ec;
+    --bg-card: #d5d9e0;
+    --bg-input: rgba(255, 255, 255, 0.6);
+    --text-primary: #1a2233;
+    --text-secondary: #4a5568;
+    --text-muted: #7a8aa8;
+    --border-color: rgba(0, 0, 0, 0.08);
+    --border-glow: rgba(251, 191, 36, 0.2);
+    --shadow-color: rgba(0, 0, 0, 0.15);
+    --cell-bg: rgba(0, 0, 0, 0.04);
+    --cell-hover: rgba(0, 0, 0, 0.06);
+    --log-bg: rgba(0, 0, 0, 0.04);
+    --card-bg: linear-gradient(145deg, #e8ecf2, #d5d9e0);
+}
+
+/* ===== 重置 & 全局 ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+body {
+    background: var(--bg-primary);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    transition: background 0.3s, color 0.3s;
+}
+#app {
+    width: 1300px;
+    max-width: 100%;
+    background: var(--bg-secondary);
+    border-radius: 40px;
+    padding: 24px 28px 32px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 30px 80px var(--shadow-color);
+    position: relative;
+    transition: background 0.3s, border-color 0.3s;
+}
+
+/* ===== 主题切换按钮 ===== */
+.theme-toggle {
+    position: absolute;
+    top: 18px;
+    right: 28px;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: 0.2s;
+    z-index: 10;
+    background: var(--bg-input);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+}
+.theme-toggle:hover {
+    color: var(--gold);
+    border-color: var(--gold);
+    transform: rotate(20deg);
+}
+
+/* ===== 大厅 ===== */
+.lobby {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    gap: 20px;
+    position: relative;
+}
+.lobby h1 {
+    color: var(--gold);
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+.lobby .sub {
+    color: var(--text-secondary);
+    font-size: 16px;
+}
+.buyin-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+}
+.buyin-btn {
+    background: var(--cell-bg);
+    border: 2px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 12px 24px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 18px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.buyin-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+.buyin-btn.active {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+    color: var(--gold);
+}
+.custom-input {
+    background: var(--bg-input);
+    border: 2px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 18px;
+    width: 180px;
+    text-align: center;
+}
+.custom-input:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+.options-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    justify-content: center;
+}
+.option-group p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 8px;
+    text-align: center;
+}
+.zodiac-grid,
+.soul-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+.zodiac-opt {
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--cell-bg);
+    cursor: pointer;
+    border: 2px solid transparent;
+    font-size: 22px;
+    transition: 0.2s;
+}
+.zodiac-opt:hover {
+    border-color: var(--gold);
+}
+.zodiac-opt.active {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+}
+.soul-opt {
+    padding: 6px 16px;
+    border-radius: 20px;
+    background: var(--cell-bg);
+    cursor: pointer;
+    border: 2px solid transparent;
+    font-size: 14px;
+    color: var(--text-secondary);
+    transition: 0.2s;
+}
+.soul-opt:hover {
+    border-color: var(--gold);
+    color: var(--text-primary);
+}
+.soul-opt.active {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+    color: var(--gold);
+}
+.start-btn {
+    background: var(--gold);
+    color: #0f172a;
+    border: none;
+    padding: 14px 48px;
+    border-radius: 40px;
+    font-weight: 800;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.start-btn:hover {
+    transform: scale(1.03);
+    background: #fcd34d;
+}
+.tutorial-link {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    border-bottom: 1px dashed var(--border-color);
+}
+.tutorial-link:hover {
+    color: var(--gold);
+    border-bottom-color: var(--gold);
+}
+.footnote {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* ===== 牌桌 ===== */
+.hidden {
+    display: none !important;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    background: var(--log-bg);
+    border-radius: 30px;
+    padding: 8px 20px;
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+.top-bar .rhythm {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+}
+.top-bar .rhythm .icon {
+    font-size: 22px;
+}
+.top-bar .pot {
+    background: var(--gold);
+    color: #0f172a;
+    padding: 2px 16px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 16px;
+}
+.music-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.music-area button {
+    background: var(--cell-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 4px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 13px;
+}
+.music-area button:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+.music-area .boom {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    font-weight: 700;
+}
+.music-area .boom:hover {
+    background: #dc2626;
+    border-color: transparent;
+}
+
+.main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+/* ===== 对手 & 玩家区域 ===== */
+.opponent-area,
+.player-area {
+    background: var(--cell-bg);
+    border-radius: 20px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-color);
+}
+.opponent-area .label,
+.player-area .label {
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.opponent-area .chips,
+.player-area .chips {
+    color: var(--gold);
+    font-size: 22px;
+    font-weight: 700;
+}
+.hand {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+.card-back {
+    width: 44px;
+    height: 64px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 20px;
+}
+.meta {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+/* ===== 筹码抽屉 ===== */
+.chip-drawer {
+    margin: 8px 0 6px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+}
+.chip-drawer:hover {
+    border-color: var(--gold-dim);
+}
+.chip-drawer-handle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: 0.2s;
+    background: var(--bg-input);
+}
+.chip-drawer-handle:hover {
+    color: var(--gold);
+}
+.chip-drawer-handle .view-badge {
+    background: var(--gold);
+    color: #0f172a;
+    font-size: 10px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    margin-left: auto;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.chip-drawer-handle .view-badge.show {
+    opacity: 1;
+    animation: pulse-badge 1s infinite alternate;
+}
+@keyframes pulse-badge {
+    from {
+        transform: scale(1);
+    }
+    to {
+        transform: scale(1.05);
+    }
+}
+.chip-drawer-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    background: var(--bg-input);
+}
+.chip-drawer-content.open {
+    max-height: 200px;
+}
+.chip-stack-3d {
+    padding: 12px;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 3px;
+    min-height: 60px;
+}
+.chip-stack-3d .chip-3d {
+    width: 28px;
+    height: 8px;
+    border-radius: 4px;
+    background: var(--gold);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s;
+}
+.chip-stack-3d .chip-3d.retreat-chip {
+    background: #ef4444;
+}
+.chip-stack-3d .chip-3d.ai-chip {
+    background: #60a5fa;
+}
+
+/* ===== 棋盘 ===== */
+.board-wrapper {
+    background: var(--bg-input);
+    border-radius: 24px;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    transition: border-color 0.3s;
+}
+.board-wrapper.bet-flash {
+    border-color: var(--gold);
+    transition: border-color 0.05s;
+}
+.board {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+    aspect-ratio: 1/1;
+}
+.cell {
+    background: var(--cell-bg);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    transition: 0.15s;
+    position: relative;
+    cursor: default;
+    aspect-ratio: 1/1;
+    border: 2px solid transparent;
+    box-shadow: inset 0 0 0 1px var(--border-color);
+}
+.cell.player-king {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+    color: var(--gold);
+}
+.cell.ai-king {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #ef4444;
+    color: #ef4444;
+}
+.cell.element-fire {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: #ef4444;
+}
+.cell.element-earth {
+    background: var(--gold-dim);
+    border-color: var(--gold);
+}
+.cell.element-wind {
+    background: rgba(96, 165, 250, 0.15);
+    border-color: #60a5fa;
+}
+.cell.element-water {
+    background: rgba(52, 211, 153, 0.15);
+    border-color: #34d399;
+}
+.cell.ruin {
+    background: rgba(100, 100, 120, 0.2);
+    border-color: #4a4a5a;
+    color: #4a4a5a;
+    font-size: 16px;
+}
+.cell .tower {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 12px;
+    color: var(--gold);
+    opacity: 0.7;
+}
+.cell.highlight {
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+    cursor: pointer;
+}
+.cell.goal {
+    border-color: #34d399;
+    box-shadow: 0 0 30px rgba(52, 211, 153, 0.3);
+}
+.board-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+/* ===== 手牌 ===== */
+.player-area .hand .card {
+    width: 52px;
+    height: 72px;
+    background: var(--card-bg);
+    border-radius: 10px;
+    border: 2px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: 0.2s;
+    position: relative;
+    box-shadow: 0 4px 12px var(--shadow-color);
+}
+.player-area .hand .card:hover {
+    border-color: var(--gold);
+    transform: translateY(-4px);
+}
+.player-area .hand .card.selected {
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+}
+.player-area .hand .card .sub {
+    font-size: 10px;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+/* ===== 操作栏 ===== */
+.action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+    align-items: center;
+    background: var(--log-bg);
+    border-radius: 20px;
+    padding: 10px 16px;
+    border: 1px solid var(--border-color);
+}
+.action-bar button {
+    background: var(--cell-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 6px 16px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 13px;
+    font-weight: 500;
+}
+.action-bar button:hover:not(:disabled) {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+.action-bar button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+.action-bar button:active:not(:disabled) {
+    transform: scale(0.97);
+}
+.action-bar .bet-input {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 4px 10px;
+    border-radius: 20px;
+    width: 72px;
+    font-size: 14px;
+}
+.action-bar .bet-input:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+.action-bar .unit {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+.action-bar .skill-btn {
+    border-color: var(--gold);
+    color: var(--gold);
+}
+.action-bar .skill-btn:hover:not(:disabled) {
+    background: var(--gold-dim);
+}
+
+/* ===== 日志 ===== */
+.log-area {
+    margin-top: 12px;
+    background: var(--log-bg);
+    border-radius: 16px;
+    padding: 10px 14px;
+    max-height: 80px;
+    overflow-y: auto;
+    font-size: 13px;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+.log-area div {
+    padding: 2px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.log-area .highlight-log {
+    color: var(--gold);
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 1000px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    #app {
+        padding: 16px;
+    }
+    .theme-toggle {
+        top: 12px;
+        right: 16px;
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+    }
+}
+@media (max-width: 600px) {
+    .lobby h1 {
+        font-size: 28px;
+    }
+    .top-bar {
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+    .player-area .hand .card {
+        width: 44px;
+        height: 60px;
+        font-size: 12px;
+    }
+    .action-bar button {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+    .action-bar .bet-input {
+        width: 56px;
+    }
+}
