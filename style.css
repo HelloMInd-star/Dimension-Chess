@@ -64,16 +64,12 @@ body {
     transition: background 0.3s, border-color 0.3s;
 }
 
-/* ===== 主题切换按钮 ===== */
+/* ===== 主题切换按钮（新布局，不再遮挡） ===== */
 .theme-toggle {
-    position: absolute;
-    top: 18px;
-    right: 28px;
     font-size: 22px;
     cursor: pointer;
     color: var(--text-secondary);
     transition: 0.2s;
-    z-index: 10;
     background: var(--bg-input);
     border-radius: 50%;
     width: 40px;
@@ -82,11 +78,17 @@ body {
     align-items: center;
     justify-content: center;
     border: 1px solid var(--border-color);
+    flex-shrink: 0;
 }
 .theme-toggle:hover {
     color: var(--gold);
     border-color: var(--gold);
     transform: rotate(20deg);
+}
+.top-bar .theme-toggle {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
 }
 
 /* ===== 大厅 ===== */
@@ -94,15 +96,23 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 30px 20px;
-    gap: 20px;
-    position: relative;
+    padding: 30px 20px 20px 20px;
+    gap: 16px;
+}
+.lobby-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    margin-bottom: 4px;
 }
 .lobby h1 {
     color: var(--gold);
-    font-size: 42px;
+    font-size: 38px;
     font-weight: 800;
     letter-spacing: 1px;
+    margin: 0;
 }
 .lobby .sub {
     color: var(--text-secondary);
@@ -236,7 +246,6 @@ body {
 .hidden {
     display: none !important;
 }
-
 .top-bar {
     display: flex;
     justify-content: space-between;
@@ -250,7 +259,6 @@ body {
     border-radius: 30px;
     padding: 8px 20px;
     border: 1px solid var(--border-color);
-    position: relative;
 }
 .top-bar .rhythm {
     display: flex;
@@ -393,12 +401,8 @@ body {
     animation: pulse-badge 1s infinite alternate;
 }
 @keyframes pulse-badge {
-    from {
-        transform: scale(1);
-    }
-    to {
-        transform: scale(1.05);
-    }
+    from { transform: scale(1); }
+    to { transform: scale(1.05); }
 }
 .chip-drawer-content {
     max-height: 0;
@@ -422,9 +426,8 @@ body {
     height: 8px;
     border-radius: 4px;
     background: var(--gold);
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: transform 0.15s;
+    border: 1px solid rgba(255,215,0,0.3);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .chip-stack-3d .chip-3d.retreat-chip {
     background: #ef4444;
@@ -473,12 +476,12 @@ body {
     color: var(--gold);
 }
 .cell.ai-king {
-    background: rgba(239, 68, 68, 0.15);
+    background: rgba(239,68,68,0.15);
     border-color: #ef4444;
     color: #ef4444;
 }
 .cell.element-fire {
-    background: rgba(239, 68, 68, 0.15);
+    background: rgba(239,68,68,0.15);
     border-color: #ef4444;
 }
 .cell.element-earth {
@@ -486,15 +489,15 @@ body {
     border-color: var(--gold);
 }
 .cell.element-wind {
-    background: rgba(96, 165, 250, 0.15);
+    background: rgba(96,165,250,0.15);
     border-color: #60a5fa;
 }
 .cell.element-water {
-    background: rgba(52, 211, 153, 0.15);
+    background: rgba(52,211,153,0.15);
     border-color: #34d399;
 }
 .cell.ruin {
-    background: rgba(100, 100, 120, 0.2);
+    background: rgba(100,100,120,0.2);
     border-color: #4a4a5a;
     color: #4a4a5a;
     font-size: 16px;
@@ -509,12 +512,12 @@ body {
 }
 .cell.highlight {
     border-color: var(--gold);
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+    box-shadow: 0 0 20px rgba(251,191,36,0.2);
     cursor: pointer;
 }
 .cell.goal {
     border-color: #34d399;
-    box-shadow: 0 0 30px rgba(52, 211, 153, 0.3);
+    box-shadow: 0 0 30px rgba(52,211,153,0.3);
 }
 .board-stats {
     display: flex;
@@ -549,7 +552,7 @@ body {
 }
 .player-area .hand .card.selected {
     border-color: var(--gold);
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);
+    box-shadow: 0 0 20px rgba(251,191,36,0.2);
 }
 .player-area .hand .card .sub {
     font-size: 10px;
@@ -645,13 +648,6 @@ body {
     #app {
         padding: 16px;
     }
-    .theme-toggle {
-        top: 12px;
-        right: 16px;
-        width: 32px;
-        height: 32px;
-        font-size: 18px;
-    }
 }
 @media (max-width: 600px) {
     .lobby h1 {
@@ -672,5 +668,9 @@ body {
     }
     .action-bar .bet-input {
         width: 56px;
+    }
+    .lobby-header {
+        flex-wrap: wrap;
+        gap: 8px;
     }
 }
