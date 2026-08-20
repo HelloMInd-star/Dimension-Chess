@@ -49,8 +49,6 @@ let G = {};
 function initGameState() {
     G = {
         phase: 'lobby',
-        chips: 0,
-        aiChips: 0,
         playerSoul: 'guardian',
         playerZodiac: 'aries',
         aiSoul: 'guardian',
@@ -258,7 +256,13 @@ function aiDecide() {
             if (rate > bestRate) { bestRate = rate; bestCard = c; }
         });
         const chips = G.aiChips;
-        let bet = Math.floor(chips * (0.1 + Math.random() * 0.2));
+        // 手牌有对子（+1步）时更激进，无对子偏保守
+        const cnt = {};
+        hand.forEach(c => { cnt[c] = (cnt[c] || 0) + 1; });
+        const hasPair = Object.values(cnt).some(v => v >= 2);
+        const lo = hasPair ? 0.15 : 0.08;
+        const hi = hasPair ? 0.35 : 0.2;
+        let bet = Math.floor(chips * (lo + Math.random() * (hi - lo)));
         bet = Math.max(1, Math.min(bet, chips));
         const steps = calcSteps(bestCard, bet);
         if (steps <= 0) {
@@ -314,8 +318,7 @@ function doAIMove(card, bet, steps) {
             endGame('ai');
             return;
         } else {
-            log('🤖 AI 吃掉了你的棋子！');
-            G.playerChips += 5;
+            log('🤖 AI 吃掉了你的棋子！它夺走 5 万筹码');
             G.aiChips += 5;
             newCell.hasPlayer = false;
         }
@@ -328,7 +331,7 @@ function doAIMove(card, bet, steps) {
         return;
     }
     G.aiPos = {r:target.r,c:target.c};
-    log(`🤖 AI 走了一步到 (${target.r+1}, ${target.c+1})`);
+    log(`🤖 AI 打出 ${card}（${group}汇率×${EXCHANGE_RATE[group]}），下注 ${bet} 万换 ${steps} 步，走到 (${target.r+1}, ${target.c+1})`);
     renderBoard();
     renderUI();
     endTurn('ai');
@@ -1018,10 +1021,8 @@ document.getElementById('startGame').addEventListener('click', function() {
     initGameState();
     G.playerSoul = selectedSoul;
     G.playerZodiac = selectedZodiac;
-    G.chips = selectedBuyin;
     G.aiChips = selectedBuyin;
     G.playerChips = selectedBuyin;
-    G.aiChips = selectedBuyin;
     G.aiSoul = pickRandom(SOUL_LIST);
     G.aiZodiac = pickRandom(ZODIAC_LIST);
     if (G.playerSoul === 'strategist') G.playerChips += 5;
